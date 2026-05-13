@@ -18,7 +18,7 @@ DROP TABLE IF EXISTS utilisateur;
 -- ========================
 CREATE TABLE utilisateur (
                              id INT AUTO_INCREMENT PRIMARY KEY,
-                             login VARCHAR(50),
+                             login VARCHAR(50) UNIQUE,
                              motDePasse VARCHAR(255),
                              role VARCHAR(50)
 );
@@ -144,3 +144,111 @@ CREATE TABLE alerte (
                         id_absence INT,
                         FOREIGN KEY (id_absence) REFERENCES absence(id)
 );
+
+-- ========================
+-- Insertion des utilisateurs (d'abord dans utilisateur)
+-- ========================
+
+-- Insertion de tous les utilisateurs avec leurs IDs explicites
+INSERT INTO utilisateur (id, login, motDePasse, role) VALUES
+(1, 'admin', '$2a$12$Sz1mOYZbF4BIrGyFfyPnGOdGnv/QemK.gXqQ7v94l9MZepuYPLfv6', 'ADMINISTRATION'),
+(2, 'martin.jean', '$2a$12$Sz1mOYZbF4BIrGyFfyPnGOdGnv/QemK.gXqQ7v94l9MZepuYPLfv6', 'ENSEIGNANT'),
+(3, 'dubois.marie', '$2a$12$Sz1mOYZbF4BIrGyFfyPnGOdGnv/QemK.gXqQ7v94l9MZepuYPLfv6', 'ETUDIANT'),
+(4, 'dubois.pierre', '$2a$12$Sz1mOYZbF4BIrGyFfyPnGOdGnv/QemK.gXqQ7v94l9MZepuYPLfv6', 'PARENT'),
+(5, 'dubois.sophie', '$2a$12$Sz1mOYZbF4BIrGyFfyPnGOdGnv/QemK.gXqQ7v94l9MZepuYPLfv6', 'ENSEIGNANT'),
+(6, 'lambert.pierre', '$2a$12$Sz1mOYZbF4BIrGyFfyPnGOdGnv/QemK.gXqQ7v94l9MZepuYPLfv6', 'ENSEIGNANT'),
+(7, 'petit.thomas', '$2a$12$Sz1mOYZbF4BIrGyFfyPnGOdGnv/QemK.gXqQ7v94l9MZepuYPLfv6', 'ETUDIANT'),
+(8, 'bernard.julie', '$2a$12$Sz1mOYZbF4BIrGyFfyPnGOdGnv/QemK.gXqQ7v94l9MZepuYPLfv6', 'ETUDIANT'),
+(9, 'robert.nicolas', '$2a$12$Sz1mOYZbF4BIrGyFfyPnGOdGnv/QemK.gXqQ7v94l9MZepuYPLfv6', 'ETUDIANT'),
+(10, 'petit.isabelle', '$2a$12$Sz1mOYZbF4BIrGyFfyPnGOdGnv/QemK.gXqQ7v94l9MZepuYPLfv6', 'PARENT');
+
+-- ========================
+-- Insertion des groupes
+-- ========================
+INSERT INTO groupe (id, nom, capaciteMax) VALUES
+(1, 'Génie Logiciel 1', 35),
+(2, 'Génie Logiciel 2', 35),
+(3, 'Réseaux 1', 30),
+(4, 'Réseaux 2', 30);
+
+-- ========================
+-- Insertion des détails pour administration
+-- ========================
+INSERT INTO administration (id, nom, prenom) VALUES
+(1, 'ADMIN', 'Système');
+
+-- ========================
+-- Insertion des détails pour enseignants (IDs doivent exister dans utilisateur)
+-- ========================
+INSERT INTO enseignant (id, nom, prenom) VALUES
+(2, 'Martin', 'Jean'),
+(5, 'Dubois', 'Sophie'),
+(6, 'Lambert', 'Pierre');
+
+-- ========================
+-- Insertion des détails pour étudiants
+-- ========================
+INSERT INTO etudiant (id, nom, prenom, cne, id_groupe) VALUES
+(3, 'Dubois', 'Marie', 'CNE123456', 1),
+(7, 'Petit', 'Thomas', 'CNE123457', 1),
+(8, 'Bernard', 'Julie', 'CNE123458', 2),
+(9, 'Robert', 'Nicolas', 'CNE123459', 3);
+
+-- ========================
+-- Insertion des détails pour parents
+-- ========================
+INSERT INTO parent (id, nom, prenom, id_etudiant) VALUES
+(4, 'Dubois', 'Pierre', 3),
+(10, 'Petit', 'Isabelle', 7);
+
+-- ========================
+-- Insertion des filières
+-- ========================
+INSERT INTO filiere (libelle, niveau) VALUES
+('Génie Logiciel', 'Bac+5'),
+('Réseaux et Télécommunications', 'Bac+5'),
+('Data Science', 'Bac+5');
+
+-- ========================
+-- Insertion des matières
+-- ========================
+INSERT INTO matiere (libelle, coefficient) VALUES
+('Programmation Java', 4.0),
+('Base de données', 3.0),
+('Génie logiciel', 4.0),
+('Réseaux', 3.5),
+('Algorithmique', 3.0);
+
+-- ========================
+-- Insertion d'un emploi du temps exemple
+-- ========================
+INSERT INTO emploi_du_temps (semaine, anneeUniv, id_groupe) VALUES
+(1, '2024-2025', 1),
+(1, '2024-2025', 2);
+
+-- ========================
+-- Insertion de séances exemple
+-- ========================
+INSERT INTO seance (date, heureDebut, heureFin, id_enseignant, id_matiere, id_emploi) VALUES
+('2024-12-02', '08:30:00', '10:30:00', 2, 1, 1),
+('2024-12-02', '10:45:00', '12:45:00', 5, 2, 1),
+('2024-12-03', '14:00:00', '16:00:00', 6, 4, 2);
+
+-- ========================
+-- Insertion d'absences exemple
+-- ========================
+INSERT INTO absence (dateSaisie, justifie, nbHeures, id_etudiant, id_seance) VALUES
+(NOW(), false, 2, 3, 1),
+(NOW(), true, 2, 7, 2);
+
+-- ========================
+-- Insertion de justifications exemple
+-- ========================
+INSERT INTO justification (motif, fichierJoint, statut, id_absence) VALUES
+('Maladie', 'certificat_medical.pdf', 'APPROUVEE', 2);
+
+-- ========================
+-- Insertion d'alertes exemple
+-- ========================
+INSERT INTO alerte (message, dateEnvoi, lu, id_absence) VALUES
+('Absence non justifiée de Marie Dubois en Programmation Java', NOW(), false, 1);

@@ -1,8 +1,87 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
-<AnchorPane xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" prefWidth="600" prefHeight="400">
+<?import javafx.geometry.Insets?>
+
+<VBox xmlns="http://javafx.com/javafx/8.0.171"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="controller.DashboardController"
+      spacing="10"
+      alignment="TOP_CENTER"
+      prefWidth="800"
+      prefHeight="600">
+
     <children>
-        <Label layoutX="20" layoutY="20" text="Tableau de bord" />
+        <MenuBar>
+            <Menu text="Accueil">
+                <MenuItem text="Dashboard" />
+                <SeparatorMenuItem />
+                <MenuItem text="Déconnexion" onAction="#handleLogout" />
+                <MenuItem text="Quitter" onAction="#handleExit" />
+            </Menu>
+            <Menu text="Gestion">
+                <Menu text="Absences">
+                    <MenuItem text="Liste des absences" onAction="#handleListeAbsences" />
+                    <MenuItem text="Ajouter une absence" onAction="#handleAjouterAbsence" />
+                    <MenuItem text="Justifier une absence" onAction="#handleJustifierAbsence" />
+                </Menu>
+                <Menu text="Étudiants">
+                    <MenuItem text="Liste des étudiants" onAction="#handleListeEtudiants" />
+                    <MenuItem text="Ajouter un étudiant" onAction="#handleAjouterEtudiant" />
+                </Menu>
+                <Menu text="Emploi du temps">
+                    <MenuItem text="Consulter" onAction="#handleConsulterEmploi" />
+                    <MenuItem text="Modifier" onAction="#handleModifierEmploi" />
+                </Menu>
+            </Menu>
+            <Menu text="Rapports">
+                <MenuItem text="Statistiques des absences" onAction="#handleStatistiques" />
+                <MenuItem text="Export PDF" onAction="#handleExportPDF" />
+                <MenuItem text="Export Excel" onAction="#handleExportExcel" />
+            </Menu>
+            <Menu text="Aide">
+                <MenuItem text="Documentation" onAction="#handleDocumentation" />
+                <MenuItem text="À propos" onAction="#handleAPropos" />
+            </Menu>
+        </MenuBar>
+
+        <VBox alignment="CENTER" spacing="20" style="-fx-padding: 50;">
+            <Label fx:id="welcomeLabel" style="-fx-font-size: 24px; -fx-font-weight: bold; -fx-text-fill: #2c3e50;" />
+            <Label fx:id="roleLabel" style="-fx-font-size: 16px; -fx-text-fill: #7f8c8d;" />
+
+            <Separator prefWidth="400" />
+
+            <GridPane hgap="20" vgap="15" alignment="CENTER">
+                <padding>
+                    <Insets top="20" />
+                </padding>
+
+                <Label text="Statistiques du jour :" GridPane.rowIndex="0" GridPane.columnIndex="0"
+                       style="-fx-font-weight: bold; -fx-font-size: 14px; -fx-text-fill: #34495e;"/>
+
+                <VBox spacing="5" GridPane.rowIndex="1" GridPane.columnIndex="0"
+                      style="-fx-padding: 15; -fx-border-color: #e74c3c; -fx-border-radius: 5; -fx-background-color: #f9e6e6; -fx-background-radius: 5;">
+                    <Label text="Total absences aujourd'hui :" style="-fx-text-fill: #c0392b;" />
+                    <Label fx:id="statsAbsencesLabel" text="0" style="-fx-font-size: 28px; -fx-font-weight: bold; -fx-text-fill: #e74c3c;" />
+                </VBox>
+
+                <VBox spacing="5" GridPane.rowIndex="1" GridPane.columnIndex="1"
+                      style="-fx-padding: 15; -fx-border-color: #27ae60; -fx-border-radius: 5; -fx-background-color: #e8f8f0; -fx-background-radius: 5;">
+                    <Label text="Absences justifiées :" style="-fx-text-fill: #229954;" />
+                    <Label fx:id="statsJustifieesLabel" text="0" style="-fx-font-size: 28px; -fx-font-weight: bold; -fx-text-fill: #27ae60;" />
+                </VBox>
+
+                <VBox spacing="5" GridPane.rowIndex="1" GridPane.columnIndex="2"
+                      style="-fx-padding: 15; -fx-border-color: #f39c12; -fx-border-radius: 5; -fx-background-color: #fef5e7; -fx-background-radius: 5;">
+                    <Label text="Alertes non lues :" style="-fx-text-fill: #e67e22;" />
+                    <Label fx:id="statsAlertesLabel" text="0" style="-fx-font-size: 28px; -fx-font-weight: bold; -fx-text-fill: #f39c12;" />
+                </VBox>
+            </GridPane>
+
+            <Label text="Système de Gestion des Absences - Version 1.0"
+                   style="-fx-font-size: 12px; -fx-text-fill: #95a5a6;
+                          -fx-padding: 20 0 0 0;" />
+        </VBox>
     </children>
-</AnchorPane>
+</VBox>

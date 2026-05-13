@@ -3,15 +3,15 @@ package model;
 import java.util.List;
 import java.util.ArrayList;
 
-public class parent extends Utilisateur {
+public class Parent extends Utilisateur {
     private String nom;
     private String prenom;
     private int id_etudiant; // FK
 
-    public parent(int id, String login, String motDePasse, String role) {
-        super(id, login, motDePasse, role);
-    }
 
+    public Parent(int id, String login, String motDePasse) {
+        super(id, login, motDePasse, "PARENT");
+    }
 
 
     public List<Absence> consulterAbsences() {

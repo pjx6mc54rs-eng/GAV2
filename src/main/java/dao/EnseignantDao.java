@@ -19,8 +19,7 @@ public class EnseignantDao {
                             rs.getString("login"),
                             rs.getString("motDePasse"),
                             rs.getString("nom"),
-                            rs.getString("prenom"),
-                            rs.getInt("id_matiere")
+                            rs.getString("prenom")
                     );
                 }
             }
@@ -42,8 +41,7 @@ public class EnseignantDao {
                         rs.getString("login"),
                         rs.getString("motDePasse"),
                         rs.getString("nom"),
-                        rs.getString("prenom"),
-                        rs.getInt("id_matiere")
+                        rs.getString("prenom")
                 ));
             }
         } catch (SQLException e) {
@@ -53,14 +51,13 @@ public class EnseignantDao {
     }
 
     public void save(Enseignant enseignant) {
-        String sql = "INSERT INTO Enseignant (login, motDePasse, nom, prenom, id_matiere) VALUES (?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO Enseignant (login, motDePasse, nom, prenom) VALUES (?, ?, ?, ?)";
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
             ps.setString(1, enseignant.getLogin());
             ps.setString(2, enseignant.getMotDePasse());
             ps.setString(3, enseignant.getNom());
             ps.setString(4, enseignant.getPrenom());
-            ps.setInt(5, enseignant.getId_matiere());
             ps.executeUpdate();
             try (ResultSet keys = ps.getGeneratedKeys()) {
                 if (keys.next()) {
@@ -73,15 +70,14 @@ public class EnseignantDao {
     }
 
     public void update(Enseignant enseignant) {
-        String sql = "UPDATE Enseignant SET login = ?, motDePasse = ?, nom = ?, prenom = ?, id_matiere = ? WHERE id = ?";
+        String sql = "UPDATE Enseignant SET login = ?, motDePasse = ?, nom = ?, prenom = ?, WHERE id = ?";
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, enseignant.getLogin());
             ps.setString(2, enseignant.getMotDePasse());
             ps.setString(3, enseignant.getNom());
             ps.setString(4, enseignant.getPrenom());
-            ps.setInt(5, enseignant.getId_matiere());
-            ps.setInt(6, enseignant.getId());
+            ps.setInt(5, enseignant.getId());
             ps.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();

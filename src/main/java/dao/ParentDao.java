@@ -1,24 +1,23 @@
 package dao;
 
-import model.parent;
+import model.Parent;
 
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public class ParentDao {
-    public parent findById(int id) {
+    public Parent findById(int id) {
         String sql = "SELECT id, login, motDePasse, role, nom, prenom, id_etudiant FROM parent WHERE id = ?";
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setInt(1, id);
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
-                    parent parent = new parent(
+                    Parent parent = new Parent(
                             rs.getInt("id"),
                             rs.getString("login"),
-                            rs.getString("motDePasse"),
-                            rs.getString("role")
+                            rs.getString("motDePasse")
                     );
                     parent.setNom(rs.getString("nom"));
                     parent.setPrenom(rs.getString("prenom"));
@@ -32,18 +31,17 @@ public class ParentDao {
         return null;
     }
 
-    public List<parent> findAll() {
-        List<parent> list = new ArrayList<>();
+    public List<Parent> findAll() {
+        List<Parent> list = new ArrayList<>();
         String sql = "SELECT id, login, motDePasse, role, nom, prenom, id_etudiant FROM parent";
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql);
              ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
-                parent parent = new parent(
+                Parent parent = new Parent(
                         rs.getInt("id"),
                         rs.getString("login"),
-                        rs.getString("motDePasse"),
-                        rs.getString("role")
+                        rs.getString("motDePasse")
                 );
                 parent.setNom(rs.getString("nom"));
                 parent.setPrenom(rs.getString("prenom"));
@@ -56,7 +54,7 @@ public class ParentDao {
         return list;
     }
 
-    public void save(parent parent) {
+    public void save(Parent parent) {
         String sql = "INSERT INTO parent (login, motDePasse, role, nom, prenom, id_etudiant) VALUES (?, ?, ?, ?, ?, ?)";
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
@@ -77,7 +75,7 @@ public class ParentDao {
         }
     }
 
-    public void update(parent parent) {
+    public void update(Parent parent) {
         String sql = "UPDATE parent SET login = ?, motDePasse = ?, role = ?, nom = ?, prenom = ?, id_etudiant = ? WHERE id = ?";
         try (Connection conn = DBConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {

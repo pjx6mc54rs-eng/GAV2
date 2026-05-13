@@ -6,13 +6,13 @@ import java.util.ArrayList;
 public class Enseignant extends Utilisateur {
     private String nom;
     private String prenom;
-    private int id_matiere; // FK
+    //private int id_matiere; // FK
 
-    public Enseignant(int id, String login, String motDePasse, String nom, String prenom, int id_matiere) {
+    public Enseignant(int id, String login, String motDePasse, String nom, String prenom) {
         super(id, login, motDePasse, "ENSEIGNANT");
         this.nom = nom;
         this.prenom = prenom;
-        this.id_matiere = id_matiere;
+       // this.id_matiere = id_matiere;
     }
 
     public void faireLAppel(Seance seance) {
@@ -32,6 +32,6 @@ public class Enseignant extends Utilisateur {
     public String getPrenom() { return prenom; }
     public void setPrenom(String prenom) { this.prenom = prenom; }
 
-    public int getId_matiere() { return id_matiere; }
-    public void setId_matiere(int id_matiere) { this.id_matiere = id_matiere; }
+//    public int getId_matiere() { return id_matiere; }
+//    public void setId_matiere(int id_matiere) { this.id_matiere = id_matiere; }
 }
