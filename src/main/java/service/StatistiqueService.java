@@ -1,15 +1,32 @@
 package service;
-
-import dao.AbsenceDao;
+import java.sql.*;
+import java.util.HashMap;
+import java.util.Map;
 
 public class StatistiqueService {
-    private final AbsenceDao absenceDao = new AbsenceDao();
-
-    public int countAbsences() {
-        return absenceDao.findAll().size();
+    public Map<String, Integer> getAbsencesParMois() {
+        Map<String, Integer> map = new HashMap<>();
+        String query = "SELECT MONTH(dateSaisie) as mois, COUNT(*) as total FROM Absence GROUP BY MONTH(dateSaisie)";
+        try(Connection conn = dao.DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(query); ResultSet rs = ps.executeQuery()){
+            while(rs.next()){
+                map.put("Mois " + rs.getInt("mois"), rs.getInt("total"));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return map;
     }
-
-    public int countJustifiees() {
-        return (int) absenceDao.findAll().stream().filter(a -> a.isJustifiee()).count();
+    
+    public Map<String, Integer> getTauxAbsenceParGroupe() {
+        Map<String, Integer> map = new HashMap<>();
+        String query = "SELECT g.nom, COUNT(a.id) as total FROM Groupe g JOIN Utilisateur u ON g.id = u.idGroupe JOIN Absence a ON u.id = a.idEtudiant GROUP BY g.nom";
+        try(Connection conn = dao.DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(query); ResultSet rs = ps.executeQuery()){
+            while(rs.next()){
+                map.put(rs.getString("nom"), rs.getInt("total"));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return map;
     }
 }

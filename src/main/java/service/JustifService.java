@@ -1,30 +1,27 @@
 package service;
-
 import dao.JustificationDao;
+import dao.AbsenceDao;
 import model.Justification;
-
-import java.util.List;
+import java.sql.SQLException;
 
 public class JustifService {
-    private final JustificationDao justificationDao = new JustificationDao();
+    private JustificationDao justificationDao = new JustificationDao();
+    private AbsenceDao absenceDao = new AbsenceDao();
 
-    public Justification getJustificationById(int id) {
-        return justificationDao.findById(id);
+    public void soumettre(int idAbsence, String motif, String fichier) throws SQLException {
+        Justification j = new Justification(0, motif, fichier, "EN_ATTENTE", idAbsence);
+        justificationDao.ajouter(j);
     }
 
-    public List<Justification> getAllJustifications() {
-        return justificationDao.findAll();
+    public void valider(int idJustif) throws SQLException {
+        justificationDao.updateStatut(idJustif, "ACCEPTEE");
+        Justification j = justificationDao.getById(idJustif);
+        if (j != null) {
+            absenceDao.modifierJustifiee(j.getIdAbsence(), true);
+        }
     }
 
-    public void saveJustification(Justification justification) {
-        justificationDao.save(justification);
-    }
-
-    public void updateJustification(Justification justification) {
-        justificationDao.update(justification);
-    }
-
-    public void deleteJustification(int id) {
-        justificationDao.delete(id);
+    public void refuser(int idJustif) throws SQLException {
+        justificationDao.updateStatut(idJustif, "REFUSEE");
     }
 }

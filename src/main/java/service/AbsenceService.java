@@ -1,30 +1,22 @@
 package service;
-
 import dao.AbsenceDao;
+import dao.ParametreDao;
 import model.Absence;
-
-import java.util.List;
+import java.sql.SQLException;
 
 public class AbsenceService {
-    private final AbsenceDao absenceDao = new AbsenceDao();
+    private AbsenceDao absenceDao = new AbsenceDao();
+    private ParametreDao parametreDao = new ParametreDao();
+    private AlerteService alerteService = new AlerteService();
 
-    public Absence getAbsenceById(int id) {
-        return absenceDao.findById(id);
-    }
-
-    public List<Absence> getAllAbsences() {
-        return absenceDao.findAll();
-    }
-
-    public void saveAbsence(Absence absence) {
-        absenceDao.save(absence);
-    }
-
-    public void updateAbsence(Absence absence) {
-        absenceDao.update(absence);
-    }
-
-    public void deleteAbsence(int id) {
-        absenceDao.delete(id);
+    public void enregistrerAbsence(Absence a) throws SQLException {
+        absenceDao.ajouter(a);
+        int totalNonJustifiees = absenceDao.compterNonJustifiees(a.getIdEtudiant());
+        //int seuil = parametreDao.getSeuil();
+        
+//        if (totalNonJustifiees >= seuil) {
+//            // We now use the newly created Absence ID to send the alert.
+//            alerteService.envoyerAlerteAbsence(a.getId(), totalNonJustifiees);
+//        }
     }
 }

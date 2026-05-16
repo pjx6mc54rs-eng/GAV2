@@ -1,30 +1,18 @@
 package service;
-
 import dao.AlerteDao;
 import model.Alerte;
-
-import java.util.List;
+import java.sql.SQLException;
+import java.time.LocalDateTime;
 
 public class AlerteService {
-    private final AlerteDao alerteDao = new AlerteDao();
+    private AlerteDao alerteDao = new AlerteDao();
 
-    public Alerte getAlerteById(int id) {
-        return alerteDao.findById(id);
-    }
-
-    public List<Alerte> getAllAlertes() {
-        return alerteDao.findAll();
-    }
-
-    public void saveAlerte(Alerte alerte) {
-        alerteDao.save(alerte);
-    }
-
-    public void updateAlerte(Alerte alerte) {
-        alerteDao.update(alerte);
-    }
-
-    public void deleteAlerte(int id) {
-        alerteDao.delete(id);
+    public void envoyerAlerteAbsence(int idAbsence, int totalNonJustifiees) {
+        Alerte a = new Alerte(0, "Attention, l'étudiant a atteint " + totalNonJustifiees + " absences non justifiées.", LocalDateTime.now(), false, idAbsence);
+        try {
+            alerteDao.ajouter(a);
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 }

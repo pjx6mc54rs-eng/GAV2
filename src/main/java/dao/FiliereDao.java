@@ -1,89 +1,38 @@
 package dao;
-
 import model.Filiere;
-
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public class FiliereDao {
-    public Filiere findById(int id) {
-        String sql = "SELECT id, nom, description FROM Filiere WHERE id = ?";
+    public List<Filiere> listerTout() throws SQLException {
+        List<Filiere> list = new ArrayList<>();
+        String query = "SELECT * FROM Filiere";
         try (Connection conn = DBConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, id);
-            try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) {
-                    return mapFiliere(rs);
-                }
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    public List<Filiere> findAll() {
-        List<Filiere> filieres = new ArrayList<>();
-        String sql = "SELECT id, nom, description FROM Filiere";
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql);
+             PreparedStatement ps = conn.prepareStatement(query);
              ResultSet rs = ps.executeQuery()) {
             while (rs.next()) {
-                filieres.add(mapFiliere(rs));
+                list.add(new Filiere(rs.getInt("id"), rs.getString("libelle"), rs.getString("niveau")));
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
         }
-        return filieres;
+        return list;
     }
-
-    public void save(Filiere filiere) {
-        String sql = "INSERT INTO Filiere (nom, description) VALUES (?, ?)";
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-            ps.setString(1, filiere.getNom());
-            ps.setString(2, filiere.getDescription());
-            ps.executeUpdate();
-            try (ResultSet keys = ps.getGeneratedKeys()) {
-                if (keys.next()) {
-                    filiere.setId(keys.getInt(1));
-                }
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
+    public void ajouter(Filiere f) throws SQLException {
+        String query = "INSERT INTO Filiere (libelle, niveau) VALUES (?, ?)";
+        try(Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(query)){
+            ps.setString(1, f.getLibelle()); ps.setString(2, f.getNiveau()); ps.executeUpdate();
         }
     }
-
-    public void update(Filiere filiere) {
-        String sql = "UPDATE Filiere SET nom = ?, description = ? WHERE id = ?";
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setString(1, filiere.getNom());
-            ps.setString(2, filiere.getDescription());
-            ps.setInt(3, filiere.getId());
-            ps.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
+    public void modifier(Filiere f) throws SQLException {
+        String query = "UPDATE Filiere SET libelle=?, niveau=? WHERE id=?";
+        try(Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(query)){
+            ps.setString(1, f.getLibelle()); ps.setString(2, f.getNiveau()); ps.setInt(3, f.getId()); ps.executeUpdate();
         }
     }
-
-    public void delete(int id) {
-        String sql = "DELETE FROM Filiere WHERE id = ?";
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, id);
-            ps.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
+    public void supprimer(int id) throws SQLException {
+        String query = "DELETE FROM Filiere WHERE id=?";
+        try(Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(query)){
+            ps.setInt(1, id); ps.executeUpdate();
         }
-    }
-
-    private Filiere mapFiliere(ResultSet rs) throws SQLException {
-        return new Filiere(
-                rs.getInt("id"),
-                rs.getString("nom"),
-                rs.getString("description")
-        );
     }
 }

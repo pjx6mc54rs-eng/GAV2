@@ -1,27 +1,22 @@
 package util;
-
 import model.Utilisateur;
 
 public class SessionManager {
-    private static Utilisateur currentUser;
+    private static Utilisateur utilisateurConnecte;
 
-    public static void setCurrentUser(Utilisateur user) {
-        currentUser = user;
+    public static void setUtilisateurConnecte(Utilisateur u) {
+        utilisateurConnecte = u;
     }
 
-    public static Utilisateur getCurrentUser() {
-        return currentUser;
+    public static Utilisateur getUtilisateurConnecte() {
+        return utilisateurConnecte;
     }
 
-    public static boolean isLoggedIn() {
-        return currentUser != null;
+    public static String getRoleConnecte() {
+        return utilisateurConnecte != null ? utilisateurConnecte.getRole() : null;
     }
 
-    public static void logout() {
-        currentUser = null;
-    }
-
-    public static boolean hasRole(String role) {
-        return currentUser != null && currentUser.getRole().equalsIgnoreCase(role);
+    public static void deconnecter() {
+        utilisateurConnecte = null;
     }
 }

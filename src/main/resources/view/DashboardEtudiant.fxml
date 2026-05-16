@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.EtudiantController">
+    <top>
+        <HBox spacing="10" style="-fx-background-color: #333; -fx-padding: 10;">
+            <Label text="Espace Étudiant" style="-fx-text-fill: white; -fx-font-size: 18px;"/>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Button text="Déconnexion" onAction="#handleLogout"/>
+        </HBox>
+    </top>
+    <center>
+        <VBox style="-fx-padding: 20;">
+            <Label fx:id="lblTotalHeures" style="-fx-font-weight: bold;"/>
+            <Label fx:id="lblNonJustifiees" style="-fx-text-fill: red;"/>
+
+            <Label text="Mes absences:"/>
+            <TableView fx:id="tableAbsences" prefHeight="200">
+                <columns>
+                    <TableColumn fx:id="colSeance" text="Séance"/>
+                    <TableColumn fx:id="colHeures" text="Heures"/>
+                    <TableColumn fx:id="colJustifiee" text="Justifiée"/>
+                </columns>
+            </TableView>
+
+            <HBox spacing="20">
+                <VBox HBox.hgrow="ALWAYS">
+                    <Label text="Mes Alertes:"/>
+                    <ListView fx:id="listAlertes" prefHeight="100"/>
+                </VBox>
+                <VBox HBox.hgrow="ALWAYS">
+                    <Label text="Statut Justificatifs:"/>
+                    <ListView fx:id="listJustificatifs" prefHeight="100"/>
+                </VBox>
+            </HBox>
+        </VBox>
+    </center>
+</BorderPane>

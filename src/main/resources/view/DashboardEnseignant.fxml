@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.EnseignantController">
+    <top>
+        <HBox spacing="10" style="-fx-background-color: #333; -fx-padding: 10;">
+            <Label text="Espace Enseignant" style="-fx-text-fill: white; -fx-font-size: 18px;"/>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Button text="Déconnexion" onAction="#handleLogout"/>
+        </HBox>
+    </top>
+    <center>
+        <VBox spacing="15">
+            <padding>
+                <Insets bottom="20.0" left="20.0" right="20.0" top="20.0"/>
+            </padding>
+            <HBox spacing="10">
+                <Label text="Groupe: "/>
+                <ComboBox fx:id="comboGroupe" onAction="#onGroupeSelected"/>
+                <Label text="Séance: "/>
+                <ComboBox fx:id="comboSeance"/>
+            </HBox>
+            <Label text="Liste des étudiants:"/>
+            <ListView fx:id="listEtudiants" VBox.vgrow="ALWAYS"/>
+            <Button text="Enregistrer les absences" onAction="#enregistrerAbsences"/>
+        </VBox>
+    </center>
+</BorderPane>

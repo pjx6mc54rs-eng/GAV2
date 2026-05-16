@@ -1,93 +1,41 @@
 package dao;
-
-import model.Absence;
-
-import java.sql.*;
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-
+import model.Absence; import java.sql.*; import java.util.*;
 public class AbsenceDao {
-    public Absence findById(int id) {
-        String sql = "SELECT id, dateSaisie, justifiee, nbHeures FROM Absence WHERE id = ?";
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, id);
+    public void ajouter(Absence a) throws SQLException {
+        String query = "INSERT INTO absence (dateSaisie, justifie, nbHeures, id_etudiant, id_seance) VALUES (?, ?, ?, ?, ?)";
+        try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS)) {
+            ps.setTimestamp(1, Timestamp.valueOf(a.getDateSaisie())); ps.setBoolean(2, a.isJustifie()); ps.setInt(3, a.getNbHeures()); ps.setInt(4, a.getIdEtudiant()); ps.setInt(5, a.getIdSeance());
+            ps.executeUpdate();
+            try (ResultSet rs = ps.getGeneratedKeys()) {
+                if (rs.next()) a.setId(rs.getInt(1));
+            }
+        }
+    }
+    public List<Absence> listerParEtudiant(int idEtudiant) throws SQLException {
+        List<Absence> list = new ArrayList<>();
+        String query = "SELECT * FROM absence WHERE id_etudiant = ?";
+        try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(query)) {
+            ps.setInt(1, idEtudiant);
             try (ResultSet rs = ps.executeQuery()) {
-                if (rs.next()) {
-                    return mapAbsence(rs);
-                }
+                while (rs.next()) list.add(new Absence(rs.getInt("id"), rs.getTimestamp("dateSaisie").toLocalDateTime(), rs.getBoolean("justifie"), rs.getInt("nbHeures"), rs.getInt("id_etudiant"), rs.getInt("id_seance")));
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
         }
-        return null;
+        return list;
     }
-
-    public List<Absence> findAll() {
-        List<Absence> absences = new ArrayList<>();
-        String sql = "SELECT id, dateSaisie, justifiee, nbHeures FROM Absence";
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql);
-             ResultSet rs = ps.executeQuery()) {
-            while (rs.next()) {
-                absences.add(mapAbsence(rs));
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
+    public int totalHeures(int idEtudiant) throws SQLException { return getIntResult("SELECT SUM(nbHeures) FROM absence WHERE id_etudiant = ?", idEtudiant); }
+    public int compterNonJustifiees(int idEtudiant) throws SQLException { return getIntResult("SELECT COUNT(*) FROM absence WHERE id_etudiant = ? AND justifie = 0", idEtudiant); }
+    public int compterParEtudiant(int idEtudiant) throws SQLException { return getIntResult("SELECT COUNT(*) FROM absence WHERE id_etudiant = ?", idEtudiant); }
+    private int getIntResult(String query, int param) throws SQLException {
+        try (Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(query)) {
+            ps.setInt(1, param);
+            try (ResultSet rs = ps.executeQuery()) { if (rs.next()) return rs.getInt(1); }
         }
-        return absences;
+        return 0;
     }
-
-    public void save(Absence absence) {
-        String sql = "INSERT INTO Absence (dateSaisie, justifiee, nbHeures) VALUES (?, ?, ?)";
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
-            ps.setTimestamp(1, Timestamp.valueOf(absence.getDateSaisie()));
-            ps.setBoolean(2, absence.isJustifiee());
-            ps.setInt(3, absence.getNbHeures());
-            ps.executeUpdate();
-            try (ResultSet keys = ps.getGeneratedKeys()) {
-                if (keys.next()) {
-                    absence.setId(keys.getInt(1));
-                }
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
+    public void modifierJustifiee(int idAbsence, boolean justifie) throws SQLException {
+        String query = "UPDATE absence SET justifie = ? WHERE id = ?";
+        try(Connection conn = DBConnection.getConnection(); PreparedStatement ps = conn.prepareStatement(query)){
+            ps.setBoolean(1, justifie); ps.setInt(2, idAbsence); ps.executeUpdate();
         }
-    }
-
-    public void update(Absence absence) {
-        String sql = "UPDATE Absence SET dateSaisie = ?, justifiee = ?, nbHeures = ? WHERE id = ?";
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setTimestamp(1, Timestamp.valueOf(absence.getDateSaisie()));
-            ps.setBoolean(2, absence.isJustifiee());
-            ps.setInt(3, absence.getNbHeures());
-            ps.setInt(4, absence.getId());
-            ps.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void delete(int id) {
-        String sql = "DELETE FROM Absence WHERE id = ?";
-        try (Connection conn = DBConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
-            ps.setInt(1, id);
-            ps.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private Absence mapAbsence(ResultSet rs) throws SQLException {
-        return new Absence(
-                rs.getInt("id"),
-                rs.getTimestamp("dateSaisie").toLocalDateTime(),
-                rs.getBoolean("justifiee"),
-                rs.getInt("nbHeures")
-        );
     }
 }

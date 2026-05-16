@@ -1,30 +1,21 @@
 package service;
-
 import dao.EtudiantDao;
+import dao.UtilisateurDao;
+import dao.GroupeDao;
 import model.Etudiant;
-
-import java.util.List;
+import java.sql.SQLException;
 
 public class EtudiantService {
-    private final EtudiantDao etudiantDao = new EtudiantDao();
+    private UtilisateurDao utilisateurDao = new UtilisateurDao();
+    private GroupeDao groupeDao = new GroupeDao();
 
-    public Etudiant getEtudiantById(int id) {
-        return etudiantDao.findById(id);
-    }
-
-    public List<Etudiant> getAllEtudiants() {
-        return etudiantDao.findAll();
-    }
-
-    public void saveEtudiant(Etudiant etudiant) {
-        etudiantDao.save(etudiant);
-    }
-
-    public void updateEtudiant(Etudiant etudiant) {
-        etudiantDao.update(etudiant);
-    }
-
-    public void deleteEtudiant(int id) {
-        etudiantDao.delete(id);
+    public void ajouterEtudiant(Etudiant e) throws SQLException, Exception {
+        int count = groupeDao.countEtudiants(e.getIdGroupe());
+        // Assume capacity could be customized per group, fetch group to be sure
+        model.Groupe g = groupeDao.listerTout().stream().filter(grp -> grp.getId() == e.getIdGroupe()).findFirst().orElse(null);
+        if (g != null && count >= g.getCapaciteMax()) {
+            throw new Exception("Le groupe est plein (capacité max : " + g.getCapaciteMax() + ")");
+        }
+        utilisateurDao.ajouter(e);
     }
 }

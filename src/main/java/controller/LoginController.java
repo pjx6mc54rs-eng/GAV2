@@ -1,12 +1,13 @@
 package controller;
 
-import dao.LoginDao;
+import dao.UtilisateurDao;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
+import javafx.scene.control.Alert;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
@@ -14,86 +15,62 @@ import model.Utilisateur;
 import util.SessionManager;
 
 import java.io.IOException;
-import java.util.Optional;
+import java.sql.SQLException;
 
 public class LoginController {
-    @FXML
-    private TextField loginField;
+    @FXML private TextField txtLogin;
+    @FXML private PasswordField txtPassword;
+
+    private UtilisateurDao utilisateurDao = new UtilisateurDao();
 
     @FXML
-    private PasswordField passwordField;
+    public void handleLogin(ActionEvent event) {
+        String login = txtLogin.getText();
+        String password = txtPassword.getText();
 
-    @FXML
-    private Button loginButton;
-
-    @FXML
-    private Label errorLabel;
-
-    private LoginDao loginDao;
-
-    @FXML
-    public void initialize() {
-        loginDao = new LoginDao();
-
-        // Ajouter la possibilité de se connecter avec la touche Entrée
-        passwordField.setOnAction(event -> handleLogin());
-        loginField.setOnAction(event -> handleLogin());
-    }
-
-    @FXML
-    private void handleLogin() {
-        String login = loginField.getText().trim();
-        String password = passwordField.getText();
-
-        // Validation des champs
         if (login.isEmpty() || password.isEmpty()) {
-            errorLabel.setText("Veuillez saisir votre login et mot de passe.");
-            errorLabel.setVisible(true);
+            showAlert(Alert.AlertType.ERROR, "Erreur", "Veuillez remplir tous les champs.");
             return;
         }
 
-        // Désactiver le bouton pendant l'authentification
-        loginButton.setDisable(true);
-        errorLabel.setVisible(false);
-
-        // Tentative d'authentification
-        Optional<Utilisateur> utilisateurOpt = loginDao.authenticate(login, password);
-
-        if (utilisateurOpt.isPresent()) {
-            Utilisateur utilisateur = utilisateurOpt.get();
-            SessionManager.setCurrentUser(utilisateur);
-
-            // Redirection vers le dashboard
-            redirectToDashboard();
-        } else {
-            errorLabel.setText("Login ou mot de passe incorrect.");
-            errorLabel.setVisible(true);
-            loginButton.setDisable(false);
-
-            // Vider le champ mot de passe
-            passwordField.clear();
+        try {
+            Utilisateur user = utilisateurDao.login(login, password);
+            if (user != null) {
+                SessionManager.setUtilisateurConnecte(user);
+                redirigerSelonRole(user.getRole(), event);
+            } else {
+                showAlert(Alert.AlertType.ERROR, "Erreur de connexion", "Identifiants incorrects ou compte inactif.");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            showAlert(Alert.AlertType.ERROR, "Erreur Base de données", "Erreur lors de la connexion à la base de données.");
         }
     }
 
-    private void redirectToDashboard() {
+    private void redirigerSelonRole(String role, ActionEvent event) {
+        String fxmlFile = "";
+        switch (role) {
+            case "ENSEIGNANT": fxmlFile = "/view/DashboardEnseignant.fxml"; break;
+            case "ETUDIANT":   fxmlFile = "/view/DashboardEtudiant.fxml"; break;
+            case "PARENT":     fxmlFile = "/view/DashboardParent.fxml"; break;
+            case "ADMINISTRATION": fxmlFile = "/view/DashboardAdmin.fxml"; break;
+        }
+        
         try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/Dashboard.fxml"));
-            Parent root = loader.load();
-
-            DashboardController dashboardController = loader.getController();
-            dashboardController.initData(SessionManager.getCurrentUser());
-
-            Stage stage = (Stage) loginButton.getScene().getWindow();
+            Parent root = FXMLLoader.load(getClass().getResource(fxmlFile));
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
             stage.setScene(new Scene(root));
-            stage.setTitle("Dashboard - Gestion des Absences");
-            stage.setMaximized(true);
             stage.show();
-
         } catch (IOException e) {
             e.printStackTrace();
-            errorLabel.setText("Erreur lors du chargement du dashboard.");
-            errorLabel.setVisible(true);
-            loginButton.setDisable(false);
+            showAlert(Alert.AlertType.ERROR, "Erreur Navigation", "Impossible de charger le tableau de bord.");
         }
+    }
+
+    private void showAlert(Alert.AlertType type, String title, String content) {
+        Alert alert = new Alert(type);
+        alert.setTitle(title);
+        alert.setContentText(content);
+        alert.showAndWait();
     }
 }

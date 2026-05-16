@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.AdminController">
+    <top>
+        <HBox spacing="10" style="-fx-background-color: #333; -fx-padding: 10;">
+            <Label text="Administration" style="-fx-text-fill: white; -fx-font-size: 18px;"/>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Button text="Exporter PDF" onAction="#exportPdf"/>
+            <Button text="Déconnexion" onAction="#handleLogout"/>
+        </HBox>
+    </top>
+    <center>
+        <VBox spacing="15" style="-fx-padding: 20;">
+            <Label text="Liste des étudiants:"/>
+            <TableView fx:id="tableEtudiants" VBox.vgrow="ALWAYS">
+                <columns>
+                    <TableColumn fx:id="colNom" text="Nom"/>
+                    <TableColumn fx:id="colPrenom" text="Prénom"/>
+                    <TableColumn fx:id="colCne" text="CNE"/>
+                </columns>
+            </TableView>
+        </VBox>
+    </center>
+</BorderPane>

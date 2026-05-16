@@ -1,22 +1,22 @@
 package model;
 
-public class Filiere {
+public class Matiere {
     private int id;
     private String libelle;
-    private String niveau;
+    private double coefficient;
 
-    public Filiere() {}
+    public Matiere() {}
 
-    public Filiere(int id, String libelle, String niveau) {
+    public Matiere(int id, String libelle, double coefficient) {
         this.id = id;
         this.libelle = libelle;
-        this.niveau = niveau;
+        this.coefficient = coefficient;
     }
 
     public int getId() { return id; }
     public void setId(int id) { this.id = id; }
     public String getLibelle() { return libelle; }
     public void setLibelle(String libelle) { this.libelle = libelle; }
-    public String getNiveau() { return niveau; }
-    public void setNiveau(String niveau) { this.niveau = niveau; }
+    public double getCoefficient() { return coefficient; }
+    public void setCoefficient(double coefficient) { this.coefficient = coefficient; }
 }
